@@ -1,0 +1,208 @@
+package cn.com.hadoop.test;
+
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Set;
+
+import cn.com.hadoop.bean.Node;
+
+public class MainMethod {
+
+	static HashMap<Integer, Node> nodes = new HashMap<Integer, Node>();
+	static Set<Integer> visited = new HashSet<Integer>();
+	static int count = 1;
+	static ArrayList<Queue<Integer>> paths = new ArrayList<Queue<Integer>>();
+	public static double relationDiscover() {
+
+		return 0;
+	}
+
+	public static void main(String[] args) throws FileNotFoundException {
+		readLittleDirectGraph();//给nodes添加小有向图
+		
+		
+		Queue<Integer> tmpQ = new LinkedList<Integer>();
+		paths.add(tmpQ);
+		
+		tmpQ.add(1);
+		visited.add(1);
+
+		queuePaths(tmpQ);
+	}
+
+	/**
+	 * 将自定义的小图放入hashmap中<ID,Node>
+	 */
+	public static void readLittleDirectGraph(){
+		ArrayList<Integer> neighborT = new ArrayList<Integer>();
+		
+		Node node1 = new Node(1, 1);
+		neighborT.add(2);
+		neighborT.add(3);
+		neighborT.add(4);
+		neighborT.add(8);
+		node1.setNeighbours(neighborT);
+		
+		Node node2 = new Node(2, 1);
+		neighborT.clear();
+		neighborT.add(3);
+		node2.setNeighbours(neighborT);
+		
+		Node node3 = new Node(3, 1);
+		Node node4 = new Node(4, 1);
+		neighborT.clear();
+		neighborT.add(5);
+		node4.setNeighbours(neighborT);
+		
+		Node node5 = new Node(5, 1);
+		neighborT.clear();
+		neighborT.add(6);
+		neighborT.add(7);
+		node5.setNeighbours(neighborT);
+		
+		Node node6 = new Node(6, 1);
+		neighborT.clear();
+		neighborT.add(1);
+		node6.setNeighbours(neighborT);
+		
+		Node node7 = new Node(7, 1);
+		neighborT.clear();
+		neighborT.add(8);
+		node6.setNeighbours(neighborT);
+		
+		Node node8 = new Node(8, 1);
+		neighborT.clear();
+		neighborT.add(7);
+		node8.setNeighbours(neighborT);
+		
+		nodes.put(1, node1);
+		nodes.put(2, node2);
+		nodes.put(3, node3);
+		nodes.put(4, node4);
+		nodes.put(5, node5);
+		nodes.put(6, node6);
+		nodes.put(7, node7);
+		nodes.put(8, node8);
+	}
+	
+	/**
+	 * 指定顶点ID,得到此node的所有路径。
+	 */
+	public static void nodePaths(Node node,Queue<Integer> paraQ){
+		//如果此ID遍历过，则返回
+		if(visited.contains(node.getId())){return;}
+		
+		paraQ.add(node.getId());//此为上一层队列，可以改变增加新的路径。
+		Queue<Integer> tmpQ = new LinkedList<Integer>(paraQ);//记录上一层的路径队列，记录。
+		
+		int c = 0;
+		ArrayList<Integer> neighbors = node.getNeighbours();
+		Queue<Integer> newQ;
+		for (Iterator iterator = neighbors.iterator(); iterator.hasNext();) {
+			int idNeighbor = (int) iterator.next();
+			if (visited.contains(idNeighbor)) {continue;}
+			c++;
+			
+			if(c==1){
+				if (visited.contains(idNeighbor)) {continue;}
+				//把它的下一层。
+				System.out.println("将ID ： " +idNeighbor+ "  & paraQ ： " + paraQ + "递归");
+			}
+			if (c>1) {//分支大于1，则添加一条路径
+				count++;//统计从A顶点出发，共有几条路径。
+				String pName = "path"+count;
+				newQ = new LinkedList<Integer>();
+				newQ = tmpQ;//tmpQ完全是上一层的队列。
+				paths.add(newQ);
+				System.out.println("将ID ： " +idNeighbor+ "  & newQ ： " + newQ + "递归");
+			}
+		}
+		
+		
+		Queue<Integer> paraQueue = new LinkedList<Integer>();
+		Queue<Integer> queueN = new LinkedList<Integer>();//
+		for (Iterator iterator = neighbors.iterator(); iterator.hasNext();) {
+			int idNeighbor = (int) iterator.next();
+			
+			ArrayList<Integer> arr = nodes.get(idNeighbor).getNeighbours();
+			for (Integer integer : arr) {
+				queueN.add(integer);//
+			}
+			
+			for (Iterator<Queue<Integer>> iteratorP = paths.iterator(); iterator.hasNext();) {
+				Queue<Integer> q = iteratorP.next();
+				if (q.contains(idNeighbor)) {
+					paraQueue = q;
+					break;
+				}
+			}
+			nodePaths(nodes.get(idNeighbor), paraQueue);
+		}
+		
+		
+		if(true) return;
+	}
+	
+	/**
+	 * 正常
+	 * 传入的是同一层的所有ID，如第一层只有1，第二层为2，3，4，8，第三层为第二层所有ID的neighbors且这些与前几层不重复。
+	 * @param paraQueue
+	 */
+	public static void queuePaths(Queue<Integer> paraQueue ){
+		System.out.println(" ~~~~~~~~~~~~~~~~~~~~~~~~   ");
+			Queue<Integer> baseQueue = new LinkedList<Integer>(paraQueue);//上一级的路径，不添加本次路径。
+			
+			Queue<Integer> neighborQueue = new LinkedList<Integer>();
+			Queue<Integer> existNeighborQueue = new LinkedList<Integer>();
+			System.out.println("visit   " + visited);
+			System.out.println("basen   " + baseQueue);
+			//遍历队列。将第二层中的ID也加入visited
+			Queue<Integer> curQueue = null;
+			for (Iterator<Integer> iterator = baseQueue.iterator(); iterator.hasNext();) {
+				int i = iterator.next();
+				//从paths集合中找到包含i的队列
+				for(Queue<Integer> q : paths){
+					if(q.contains(i)){
+						curQueue = q;
+						break;
+					}
+				}
+				
+				int c = 0;
+				ArrayList<Integer> neighbors = nodes.get(i).getNeighbours();
+				Queue<Integer> curTmpQueue = new LinkedList<Integer>(curQueue);
+				for(int i1 : neighbors){
+					if (visited.contains(i1))
+						continue;
+					c++;
+					if(c>1){
+						visited.add(i1);
+						existNeighborQueue.add(i1);
+						Queue<Integer> newQueue = new LinkedList<Integer>(curTmpQueue);
+						newQueue.add(i1);
+						paths.add(newQueue);
+					}else{
+						visited.add(i1);
+						existNeighborQueue.add(i1);
+						curQueue.add(i1);
+					}
+				}
+			}
+			System.out.println("visit   " + visited);
+			System.out.println("exist   " + existNeighborQueue);
+			//遍历paths
+			for (Iterator<Queue<Integer>> iterator = paths.iterator(); iterator.hasNext();) {
+				Queue<Integer> q = iterator.next();
+				System.out.println(q);
+			}
+			if (existNeighborQueue.isEmpty()) { //遍历结束，跳出，否则为死循环。
+				return;
+			}
+			queuePaths(existNeighborQueue);
+		}
+}
