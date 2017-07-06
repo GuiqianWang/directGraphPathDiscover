@@ -1,0 +1,51 @@
+package cn.com.hadoop.bean;
+
+import java.util.ArrayList;
+
+public class Node {
+	
+	private int id;
+	private int color;
+	private int initColor;
+	private boolean isVisited = false;
+	private ArrayList<Integer> neighbours;
+	public Node(int id) {
+		this.id = id;
+	}
+	public Node(int id, int initColor) {
+		this.id = id;
+		this.color = initColor;
+		this.initColor = initColor;
+		this.neighbours = new ArrayList<Integer>();
+	}
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public int getColor() {
+		return color;
+	}
+	public void setColor(int color) {
+		this.color = color;
+	}
+	public int getInitColor() {
+		return initColor;
+	}
+	
+	public ArrayList<Integer> getNeighbours() {
+		return neighbours;
+	}
+	public void setNeighbours(ArrayList<Integer> neighbours) {
+		for(int id : neighbours)
+			this.neighbours.add(id);
+	}
+	public boolean getIsVisited() {
+		return isVisited;
+	}
+	public void setIsVisited(boolean isVisited) {
+		this.isVisited = isVisited;
+	}
+	
+}
