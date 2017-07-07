@@ -89,65 +89,7 @@ public class MainMethod {
 		nodes.put(7, node7);
 		nodes.put(8, node8);
 	}
-	
-	/**
-	 * 指定顶点ID,得到此node的所有路径。
-	 */
-	public static void nodePaths(Node node,Queue<Integer> paraQ){
-		//如果此ID遍历过，则返回
-		if(visited.contains(node.getId())){return;}
 		
-		paraQ.add(node.getId());//此为上一层队列，可以改变增加新的路径。
-		Queue<Integer> tmpQ = new LinkedList<Integer>(paraQ);//记录上一层的路径队列，记录。
-		
-		int c = 0;
-		ArrayList<Integer> neighbors = node.getNeighbours();
-		Queue<Integer> newQ;
-		for (Iterator iterator = neighbors.iterator(); iterator.hasNext();) {
-			int idNeighbor = (int) iterator.next();
-			if (visited.contains(idNeighbor)) {continue;}
-			c++;
-			
-			if(c==1){
-				if (visited.contains(idNeighbor)) {continue;}
-				//把它的下一层。
-				System.out.println("将ID ： " +idNeighbor+ "  & paraQ ： " + paraQ + "递归");
-			}
-			if (c>1) {//分支大于1，则添加一条路径
-				count++;//统计从A顶点出发，共有几条路径。
-				String pName = "path"+count;
-				newQ = new LinkedList<Integer>();
-				newQ = tmpQ;//tmpQ完全是上一层的队列。
-				paths.add(newQ);
-				System.out.println("将ID ： " +idNeighbor+ "  & newQ ： " + newQ + "递归");
-			}
-		}
-		
-		
-		Queue<Integer> paraQueue = new LinkedList<Integer>();
-		Queue<Integer> queueN = new LinkedList<Integer>();//
-		for (Iterator iterator = neighbors.iterator(); iterator.hasNext();) {
-			int idNeighbor = (int) iterator.next();
-			
-			ArrayList<Integer> arr = nodes.get(idNeighbor).getNeighbours();
-			for (Integer integer : arr) {
-				queueN.add(integer);//
-			}
-			
-			for (Iterator<Queue<Integer>> iteratorP = paths.iterator(); iterator.hasNext();) {
-				Queue<Integer> q = iteratorP.next();
-				if (q.contains(idNeighbor)) {
-					paraQueue = q;
-					break;
-				}
-			}
-			nodePaths(nodes.get(idNeighbor), paraQueue);
-		}
-		
-		
-		if(true) return;
-	}
-	
 	/**
 	 * 正常
 	 * 传入的是同一层的所有ID，如第一层只有1，第二层为2，3，4，8，第三层为第二层所有ID的neighbors且这些与前几层不重复。
